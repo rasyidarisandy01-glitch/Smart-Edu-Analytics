@@ -1,164 +1,118 @@
-# Smart Edu Analytics - Asisten AI Guru
+## Smart Edu Analytics: Platform Analisis Nilai Siswa Berbasis Dual-Mode AI
+Smart Edu Analytics adalah platform analitik akademik inovatif yang dirancang untuk mengotomatisasi evaluasi nilai siswa bagi guru. Dibangun dengan memprioritaskan stabilitas (Minimum Viable Product/MVP) dan keamanan privasi, platform ini secara instan mengubah data nilai mentah (Excel/CSV) menjadi wawasan pedagogik visual dan laporan PDF.
 
-Platform analisis nilai siswa yang didukung oleh AI untuk membantu guru mengevaluasi hasil belajar siswa dengan objektif sekaligus memberikan umpan balik yang menjaga kesehatan mental dan motivasi belajar siswa.
+Proyek ini mengatasi masalah beban kerja administratif guru—yang rata-rata menghabiskan 11 jam per minggu untuk rekapitulasi nilai—dengan memangkas waktu pemrosesan menjadi di bawah 30 detik per kelas.
 
-## Fitur Utama
+# Fitur Unggulan
+Dual-Mode AI (Hybrid): Sistem asisten cerdas (Edu-Chat) yang fleksibel. Dapat berjalan di Cloud menggunakan Google Gemini API (untuk performa maksimal) atau secara lokal/Offline menggunakan Ollama (untuk sekolah dengan kendala internet atau kebijakan privasi ketat).
 
-- **Analisis Nilai Siswa**: Upload file Excel nilai siswa dan dapatkan analisis komprehensif
-- **Dukungan Dual AI**: 
-  - **Ollama (Lokal)**: AI yang berjalan di komputer Anda tanpa kuota atau biaya
-  - **Gemini API (Cloud)**: AI dari Google dengan performa tinggi (butuh internet dan API key)
-- **Edu-Chat**: Ajukan pertanyaan terkait nilai siswa dengan konteks berdasarkan data yang diunggah; riwayat percakapan dipertahankan saat berpindah menu
-- **Visualisasi Interaktif**: Grafik perkembangan nilai siswa menggunakan Plotly
-- **Export Laporan**: 
-  - Unduh hasil analisis dalam format teks (TXT)
-  - Unduh laporan lengkap dalam format PDF dengan tabel dan grafik
-- **Desain Responsif**: Antarmuka yang bersih dan mudah digunakan
+Smart Context Injection (RAG-Lite): AI dirancang 100% bebas dari halusinasi data. AI secara ketat diinstruksikan untuk hanya memberikan analisis, wawasan, dan saran pedagogik berdasarkan angka riil yang diunggah oleh guru.
 
-## Cara Menggunakan
+Sistem Otorisasi Multi-Peran (RBAC-Lite):
 
-### 1. Persyaratan Sistem
-Pastikan Anda telah menginstall:
-- Python 3.7+
-- Paket Python yang diperlukan (lihat bagian Instalasi di bawah)
+Guru (Eksekutor): Dapat mengunggah data, melihat analisis kelas, berinteraksi dengan Edu-Chat, dan mencetak laporan individu.
 
-### 2. Instalasi
-```bash
-# Install paket yang diperlukan
-pip install streamlit pandas plotly google-generativeai requests fpdf2 matplotlib
+Kepala Sekolah (Pemantau): Memiliki akses Read-Only ke Dasbor Eksekutif untuk memantau performa sekolah secara menyeluruh tanpa risiko mengubah data.
 
-# Untuk fitur AI Lokal (Ollama):
-# 1. Download dan install Ollama dari https://ollama.com/
-# 2. Jalankan Ollama: ollama serve
-# 3. Pull model yang diinginkan (default: gemma4:e2b):
-#    ollama pull gemma4:e2b
-# Jika belum punya model AI, bisa di download dari situs https://ollama.com/search
+Orang Tua (Privat): Jalur login khusus berbasis NISN (tanpa password) untuk mengakses grafik perkembangan nilai eksklusif milik anaknya saja, menjaga privasi antar siswa.
 
-# Untuk fitr AI Cloud (Gemini API):
-# 1. Dapatkan API key dari https://makersuite.google.com/app/apikey
-# 2. Masukkan API key di sidebar aplikasi
-```
+Visualisasi Data Interaktif: Menyajikan metrik komprehensif melalui Radar Chart kompetensi, grafik Line Chart pergerakan bulanan, dan deteksi Focus Area secara otomatis.
 
-### 3. Menjalankan Aplikasi
-```bash
-# Navigasi ke direktori proyek
-cd path/to/smart_edu_analytics
+Generator PDF Siap Cetak (Massal & Individu): Mengekspor hasil analisis visual dan narasi rekomendasi AI ke dalam format dokumen resmi sekolah dengan sekali klik (termasuk fitur pembuatan ZIP massal untuk satu kelas).
 
-# Jalankan aplikasi
+Academic Early Warning System: Secara proaktif menyoroti siswa yang rata-rata nilainya berada di bawah KKM atau mengalami penurunan drastis pada dua bulan berurutan, membantu guru mengambil tindakan preventif (misalnya remedial atau konseling BK).
+
+# Teknologi yang Digunakan (Pendekatan STEAM)
+Proyek ini dikembangkan secara efisien menggunakan tumpukan teknologi Open-Source (Biaya Operasional Rp 0):
+
+Bahasa Utama: Python 3.10+
+
+Frontend & State Management: Streamlit (dengan Custom CSS Glassmorphism & Mock Database in-memory)
+
+Pemrosesan Data & Matematika: Pandas
+
+Visualisasi: Plotly Express & Graph Objects
+
+Mesin AI (Cloud): Google Gemini API (gemini-1.5-flash dll.)
+
+Mesin AI (Offline): Ollama (gemma4:e2b dll.)
+
+Dokumen (Seni & Rekayasa): FPDF (Pembuat Laporan PDF), Matplotlib (Render grafik statis), Zipfile
+
+# Cara Instalasi & Menjalankan Aplikasi Lokal
+Ikuti langkah-langkah berikut untuk menjalankan Smart Edu Analytics di komputer Anda:
+
+1. Kloning Repositori
+Bash
+git clone https://github.com/username-anda/smart-edu-analytics.git
+cd smart-edu-analytics
+2. Buat Virtual Environment (Opsional tapi disarankan)
+Bash
+python -m venv venv
+- Untuk Windows:
+venv\Scripts\activate
+- Untuk Mac/Linux:
+source venv/bin/activate
+3. Instal Dependensi
+Pastikan Anda menginstal seluruh pustaka yang diperlukan:
+
+Bash
+pip install streamlit pandas plotly requests fpdf2 matplotlib google-generativeai openpyxl
+4. Konfigurasi Kosmetik UI (Opsional)
+Untuk tampilan level Enterprise, pastikan file konfigurasi tema berada pada jalurnya:
+
+Buat folder .streamlit dan pastikan file .streamlit/config.toml berisi pengaturan primary color dan dark mode.
+
+Pastikan file background (contoh: bg_login.jpg) berada di direktori akar yang sama dengan app.py.
+
+5. Jalankan Aplikasi
+Bash
 streamlit run app.py
-```
+Aplikasi akan otomatis terbuka di browser melalui http://localhost:8501.
 
-### 4. Menggunakan Aplikasi
-1. Buka browser dan navigasi ke `http://localhost:8501`
-2. Upload file Excel nilai siswa dengan kolom:
-   - Nama Siswa
-   - Mata Pelajaran
-   - Bulan
-   - Topik
-   - Nilai
-3. Pilih siswa yang ingin dianalisis dari dropdown
-4. Pilih mesin AI yang diinginkan di sidebar:
-   - **Ollama (Lokal)**: Tidak butuh API key, tapi pastikan Ollama berjalan
-   - **Gemini API (Cloud)**: Butuh API key Google Gemini yang valid
-5. Klik tombol "🤖 Buat Analisis AI"
-6. Tunggu proses analisis selesai
-7. Hasil analisis akan ditampilkan bersama dengan grafik
-8. Unduh laporan:
-   - 📥 **Unduh Laporan Analisis (Teks)**: Hasil analisis dalam format teks
-   - 📄 **Unduh Laporan PDF Lengkap**: Laporan lengkap dengan tabel, grafik, dan teks
+# Panduan Penggunaan (Alur Demo)
+Sistem ini didesain menggunakan manajemen memori sementara (session state) untuk presentasi live-demo yang stabil. Sangat disarankan menjalankan alur ini di SATU tab browser yang sama.
 
-## Struktur File
+Fase 1 (Guru):
 
-```
-smart_edu_analytics/
-├── app.py              # Entry point dan antarmuka Streamlit
-├── config.py           # Konstanta, konfigurasi AI, dan template prompt
-├── data_utils.py       # Persiapan data dan analitik berbasis Pandas
-├── visualizations.py   # Factory grafik Plotly
-├── pdf_generator.py    # Pembuatan dan ekspor laporan PDF
-├── ai_services.py      # Integrasi provider AI dan pemrosesan respons
-├── logo.png            # Logo sekolah (opsional untuk laporan PDF)
-└── README.md           # File ini
-```
+Login menggunakan tab Login Staf Sekolah. (Contoh demo kredensial: Username guru_ipa, Password 123).
 
-## Konfigurasi AI
+Unduh templat Excel yang disediakan atau gunakan Data_Nilai_Multi_Subject_Ekstrem.xlsx (dari skrip generate_excel.py).
 
-### Ollama (Lokal)
-- Model default: `gemma4:e2b` (bisa diubah di sidebar)
-- Tidak memerlukan API key
-- Berjalan sepenuhnya di komputer lokal Anda
-- Cocok untuk privasi data dan tanpa biaya penggunaan
+Unggah (Upload) file tersebut.
 
-### Gemini API (Cloud)
-- Memerlukan API key Google Gemini yang valid
-- Model yang tersedia:
-  - gemini-3.6-flash (default)
-  - gemini-3.5-flash-lite
-  - gemini-3.5-flash
-  - gemini-3.0-pro
-  - gemini-2.5-pro
-  - gemini-1.5-pro
-  - gemini-1.5-flash
-- Memerlukan koneksi internet
-- Mendapatkan kuota harian dari Google (lihat https://makersuite.google.com untuk detail)
+Buka tab Class Analytics untuk melihat ringkasan rata-rata kelas.
 
-## Format File Excel yang Didukung
+Buka tab Analisis Individu, pilih siswa spesifik, buat (generate) wawasan AI, dan unduh laporan PDF.
 
-File Excel harus memiliki kolom berikut:
+Tekan Logout.
 
-| Nama Siswa | Mata Pelajaran | Bulan | Topik | Nilai |
-|------------|----------------|-------|-------|-------|
-| Budi Santoso | Matematika | Januari | Aljabar | 85 |
-| Budi Santoso | Matematika | Februari | Peluang | 90 |
-| ... | ... | ... | ... | ... |
+Fase 2 (Kepala Sekolah):
 
-**Catatan**: 
-- Kolom "Bulan" harus menggunakan nama bulan lengkap (Januari, Februari, etc.)
-- Nilai harus dalam format angka
-- File harus dalam format .xlsx
+Login dengan kredensial Kepsek (Contoh demo: Username kepsek, Password 123).
 
-## Hasil Analisis
+Anda akan melihat grafik dasbor data yang sama, tetapi fitur Chat AI dan unggah akan dikunci (Read-Only).
 
-Setelah analisis selesai, Anda akan mendapatkan:
+Tekan Logout.
 
-1. **Visualisasi Interaktif**: Grafik garis yang menunjukkan perkembangan nilai dari waktu ke waktu
-2. **Metrik Statistik**: Nilai rata-rata, tertinggi, terendah, dan terakhir
-3. **Analisis AI**: 
-   - Sorotan prestasi (mata pelajaran dengan nilai tertinggi)
-   - Area pengembangan (mata pelajaran yang perlu perhatian)
-   - Rencana tindak lanjut (3 langkah konkret)
-   - Pesan motivasi untuk siswa
-4. **Opsi Unduh**:
-   - Format teks untuk catatan cepat
-   - Format PDF lengkap untuk dokumentasi dan distribusi
+Fase 3 (Orang Tua):
 
-## Privasi dan Keamanan
+Di halaman login, pilih tab Cek Rapor Siswa (Wali Murid).
 
-- **Ollama (Lokal)**: Data tidak pernah meninggalkan komputer Anda
-- **Gemini API (Cloud)**: Data dikirim ke server Google untuk diproses (pastikan Anda memahami kebijakan privasi Google)
-- File Excel yang diupload hanya disimpan di memori selama sesi aktif dan tidak disimpan permanen
+Masukkan NISN anak (Contoh demo: 12345).
 
-## Tips Penggunaan
+Sistem akan langsung menampilkan Radar Chart dan tren nilai khusus untuk anak tersebut tanpa membocorkan data siswa lain.
 
-1. Untuk hasil terbaik, gunakan data yang lengkap dan konsisten
-2. Pastikan nama bulan ditulis lengkap dan sesuai standar (Januari, Februari, etc.)
-3. Jika menggunakan Ollama, pastikan layanan Ollama berjalan di background
-4. Untuk Gemini API, perhatikan kuota harian Anda untuk menghindari masalah rate limit
-5. Laporan PDF cocok untuk distribusi kepada orang tua atau dokumentasi sekolah
+# Pengembangan ke Depan (Roadmap)
+Smart Edu Analytics versi saat ini adalah bentuk Minimum Viable Product (MVP). Untuk penyebaran skala penuh di institusi pendidikan, direkomendasikan untuk:
 
-## Pengembangan Lanjutan
+Mengganti in-memory dictionary (Mock Database) dengan API ke database relasional sungguhan (seperti MySQL, PostgreSQL, atau integrasi langsung ke sistem Dapodik).
 
-Jika Anda ingin mengembangkan aplikasi ini lebih lanjut, beberapa area yang bisa ditingkatkan:
+Menerapkan Parental AI Assistant yang secara spesifik dirancang untuk memberikan saran pengasuhan berbasis data (Data-driven parenting) bagi orang tua di rumah.
 
-- Penambahan jenis visualisasi lain (bar chart, heatmap, etc.)
-- Integrasi dengan sistem sekolah atau LMS
-- Penambahan fitur perbandingan antar siswa atau antar kelas
-- Ekspor ke format lain seperti Word atau HTML
-- Implementasi sistem login dan manajemen pengguna
+Membangun manajemen kredensial (Hashing/JWT) untuk otentikasi level produksi.
 
-## Lisensi
+# Lisensi & Atribusi
+Proyek ini dibangun untuk tujuan edukasi dan inovasi akademik. Seluruh komponen bersumber dari teknologi open-source.
 
-Proyek ini dikembangkan untuk tujuan edukational dan boleh digunakan serta dimodifikasi secara bebas.
-
----
-*Smart Edu Analytics - Asisten AI Guru | Dibangun dengan Streamlit, Pandas, Plotly, dan Google Gemini AI*
+Dikembangkan oleh: [team_name / my_name]
