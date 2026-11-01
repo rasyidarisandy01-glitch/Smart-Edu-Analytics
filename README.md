@@ -81,7 +81,7 @@ Fase 1 (Guru):
 
 Login menggunakan tab Login Staf Sekolah. (Contoh demo kredensial: Username guru_ipa, Password 123).
 
-Unduh templat Excel yang disediakan atau gunakan Data_Nilai_Multi_Subject_Ekstrem.xlsx (dari skrip generate_excel.py).
+Unduh templat Excel yang disediakan atau gunakan data_nilai.xlsx (dari skrip generate_excel.py).
 
 Unggah (Upload) file tersebut.
 
