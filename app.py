@@ -371,6 +371,46 @@ LOGIN_CREDENTIALS = {
 }
 
 if not st.session_state.get('logged_in', False):
+    # --- ANIMASI BACKGROUND IKON EDUKASI MELAYANG ---
+    st.markdown("""
+    <style>
+    /* Definisi gerakan melayang (naik-turun + sikit rotasi) */
+    @keyframes floatAnimation {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-18px) rotate(6deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    /* Styling elemen ikon background */
+    .bg-floating-icon {
+        position: fixed;
+        font-size: 2.8rem;
+        opacity: 0.2; /* Transparan halus agar tidak mengganggu fokus login */
+        pointer-events: none; /* Clicks tembus ke background (tidak menghalangi tombol) */
+        z-index: 0;
+        user-select: none;
+        animation: floatAnimation 4s ease-in-out infinite;
+    }
+
+    /* Variasi posisi dan kecepatan gerak tiap ikon */
+    .icon-left-top     { top: 18%; left: 8%;  animation-duration: 4.8s; }
+    .icon-left-mid     { top: 48%; left: 5%;  animation-duration: 6.2s; animation-delay: 1s; }
+    .icon-left-bottom  { top: 75%; left: 10%; animation-duration: 5.2s; animation-delay: 2s; }
+
+    .icon-right-top    { top: 22%; right: 9%;  animation-duration: 5.5s; animation-delay: 0.5s; }
+    .icon-right-mid    { top: 52%; right: 6%;  animation-duration: 4.3s; animation-delay: 1.5s; }
+    .icon-right-bottom { top: 78%; right: 11%; animation-duration: 6.0s; animation-delay: 0.8s; }
+    </style>
+
+    <!-- Ikon-ikon di area kosong kiri & kanan -->
+    <div class="bg-floating-icon icon-left-top">🎓</div>
+    <div class="bg-floating-icon icon-left-mid">📚</div>
+    <div class="bg-floating-icon icon-left-bottom">💡</div>
+
+    <div class="bg-floating-icon icon-right-top">📝</div>
+    <div class="bg-floating-icon icon-right-mid">🎓</div>
+    <div class="bg-floating-icon icon-right-bottom">📖</div>
+    """, unsafe_allow_html=True)
     # Membuat layout 3 kolom agar form login berada presisi di tengah
     _, login_column, _ = st.columns([1, 1.6, 1])
     
@@ -1292,7 +1332,7 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                 # ==========================================
                 # ZONA 4: VISUALISASI DATA (Kiri-Kanan)
                 # ==========================================
-                st.markdown("#### 📈 Tren & Performa Topik")
+                st.markdown("#### Tren & Performa Topik")
                 chart_cols = st.columns([1.5, 1]) # Kolom tren lebih lebar
                 
                 with chart_cols[0]:
@@ -1319,7 +1359,7 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                 # ==========================================
                 # ZONA 5: AI BRAIN & TABEL DATA MENTAH
                 # ==========================================
-                st.markdown("#### 🧠 AI Brain: Rekomendasi Tindak Lanjut (RTL)")
+                st.markdown("#### Rekomendasi Tindak Lanjut (RTL)")
                 if role == 'Guru':
                     teacher_recommendations = generate_teacher_recommendation(class_df, KKM)
                     st.info(
