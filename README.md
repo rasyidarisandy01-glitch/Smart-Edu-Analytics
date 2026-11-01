@@ -46,7 +46,7 @@ Ikuti langkah-langkah berikut untuk menjalankan Smart Edu Analytics di komputer 
 Bash
 git clone https://github.com/username-anda/smart-edu-analytics.git
 cd smart-edu-analytics
-2. Buat Virtual Environment (Opsional tapi disarankan)
+3. Buat Virtual Environment (Opsional tapi disarankan)
 Bash
 python -m venv venv
 - Untuk Windows:
