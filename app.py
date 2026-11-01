@@ -14,29 +14,66 @@ def set_background(image_file):
     with open(image_file, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
     
-    css = f"""
+    st.markdown("""
     <style>
-    /* Menggabungkan warna gelap transparan (overlay) langsung ke gambar background */
-    .stApp {{
-        background-image: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url("data:image/jpeg;base64,{encoded_string}");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }}
-    
-    /* Membuat kontainer konten transparan agar tidak ada kotak yang terpotong */
-    .block-container {{
-        background-color: transparent;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }}
-    
-    /* Menyembunyikan elemen bawaan Streamlit (opsional) */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
+    /* 1. Menyembunyikan menu bawaan Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+
+    /* 2. Styling Card Utama (Efek Container Berbingkai) */
+    div[data-testid="stVerticalBlock"] > div[style*="background-color"] {
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    /* 3. Custom Styling untuk Metric Cards */
+    [data-testid="stMetricValue"] {
+        font-size: 1.8rem !important;
+        font-weight: 700 !important;
+        color: #2E66F6 !important;
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: #A0AEC0 !important;
+    }
+
+    /* 4. Custom Styling Tombol Primer (AI & Action) */
+    .stButton>button[kind="primary"] {
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, #2E66F6 0%, #1D4ED8 100%) !important;
+        border: none !important;
+        color: white !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: 0 4px 12px rgba(46, 102, 246, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    .stButton>button[kind="primary"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(46, 102, 246, 0.4) !important;
+    }
+
+    /* 5. Custom Styling Radio/Tab Menu Navigasi */
+    div[role="radiogroup"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 8px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 6. Kotak Kredensial Demo Login */
+    .demo-badge {
+        background-color: rgba(46, 102, 246, 0.1);
+        border-left: 4px solid #2E66F6;
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 0.85rem;
+    }
     </style>
-    """
-    st.markdown(css, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # PANGGILAN FUNGSI
 # set_background('bg_edu.jpg')
@@ -334,18 +371,33 @@ LOGIN_CREDENTIALS = {
 }
 
 if not st.session_state.get('logged_in', False):
-    login_column = st.columns([1, 1.4, 1])[1]
+    # Membuat layout 3 kolom agar form login berada presisi di tengah
+    _, login_column, _ = st.columns([1, 1.6, 1])
+    
     with login_column:
-        st.title('Login Smart Edu Analytics')
+        st.markdown("<h2 style='text-align: center; margin-bottom: 0;'>🎓 Smart Edu Analytics</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #A0AEC0; margin-bottom: 25px;'>Platform Analisis Nilai Siswa Berbasis AI</p>", unsafe_allow_html=True)
+        
+        # Kartu informasi kredensial demo untuk Juri
+        st.markdown("""
+        <div class="demo-badge">
+            <strong>🔑 Akun Uji Coba Demo (Lomba APSI):</strong><br>
+            • <strong>Guru:</strong> Username <code>guru_ipa</code> | Pass <code>123</code><br>
+            • <strong>Kepala Sekolah:</strong> Username <code>kepsek</code> | Pass <code>123</code><br>
+            • <strong>Wali Murid:</strong> Tab Cek Rapor -> NISN <code>12345</code>
+        </div>
+        """, unsafe_allow_html=True)
+
         staff_login_tab, parent_login_tab = st.tabs([
-            'Login Staf Sekolah',
-            'Cek Rapor Siswa (Wali Murid) 🔒',
+            '👨‍🏫 Login Staf Sekolah',
+            '🔒 Cek Rapor (Wali Murid)',
         ])
+
         with staff_login_tab:
             with st.form('login_form'):
-                username = st.text_input('Username')
-                password = st.text_input('Password', type='password')
-                submitted = st.form_submit_button('Masuk')
+                username = st.text_input('Username', placeholder='Masukkan username')
+                password = st.text_input('Password', type='password', placeholder='Masukkan password')
+                submitted = st.form_submit_button('Masuk ke Dashboard', type='primary', use_container_width=True)
 
             if submitted:
                 account = LOGIN_CREDENTIALS.get(username)
@@ -355,16 +407,12 @@ if not st.session_state.get('logged_in', False):
                     st.session_state['username'] = username
                     st.rerun()
                 else:
-                    st.error('Username atau Password salah')
-                    st.caption(
-                        "Untuk demo, buka tab 'Cek Rapor Siswa (Wali Murid)' "
-                        "dan masukkan NISN '12345'."
-                    )
+                    st.error('❌ Username atau Password salah')
 
         with parent_login_tab:
             with st.form('parent_login_form'):
-                nisn = st.text_input('Masukkan NISN Siswa')
-                parent_submitted = st.form_submit_button('Lihat Rapor')
+                nisn = st.text_input('NISN Siswa', placeholder='Masukkan NISN 5 digit (contoh: 12345)')
+                parent_submitted = st.form_submit_button('Lihat Rapor Siswa', type='primary', use_container_width=True)
 
             if parent_submitted:
                 if nisn.strip() == '12345':
@@ -373,7 +421,8 @@ if not st.session_state.get('logged_in', False):
                     st.session_state['nisn_aktif'] = '12345'
                     st.rerun()
                 else:
-                    st.error('NISN tidak ditemukan.')
+                    st.error('❌ NISN tidak ditemukan.')
+
     st.stop()
 
 role = st.session_state['role']
@@ -1300,16 +1349,17 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                 topik_terlemah = class_metrics['weakest_topic']
                 topic_class_data = class_metrics['topic_averages']
 
-                metric_cols = st.columns(4)
-                metric_cols[0].metric('Rata-rata Nilai Kelas', rata_rata_kelas)
-                metric_cols[1].metric('Jumlah Siswa', jumlah_siswa_kelas)
-                metric_cols[2].metric('Topik Terlemah', topik_terlemah)
-                metric_cols[3].metric(
-                    'Persentase Ketuntasan',
-                    persentase_ketuntasan,
-                    help='Persentase siswa dengan nilai rata-rata >= KKM (70)'
-                )
+                # Tampilan Ringkasan Metrik Utama Dashboard
+                with st.container():
+                    st.markdown("### 📊 Ringkasan Statistik Kelas")
+                    metric_cols = st.columns(4)
+                    metric_cols[0].metric('Rata-rata Nilai Kelas', rata_rata_kelas, help='Nilai rerata seluruh mata pelajaran')
+                    metric_cols[1].metric('Jumlah Siswa', f"{jumlah_siswa_kelas} Siswa")
+                    metric_cols[2].metric('Topik Terlemah', topik_terlemah)
+                    metric_cols[3].metric('Ketuntasan KKM', persentase_ketuntasan, help='Siswa dengan nilai rata-rata >= 70')
+                st.markdown("---")
 
+                # Graph
                 chart_cols = st.columns(2)
                 with chart_cols[0]:
                     st.write('**Tren Rata-rata Nilai Kelas per Bulan**')
