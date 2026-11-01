@@ -439,6 +439,8 @@ else:
 
 # Sidebar untuk API Key dan konfigurasi model
 with st.sidebar:
+    top_sidebar_container = st.container()
+
     if role == 'Guru':
         st.header('Konfigurasi AI')
 
@@ -1216,8 +1218,7 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                 # ==========================================
                 # ZONA 1: GLOBAL FILTER (Pindah ke Sidebar)
                 # ==========================================
-                with st.sidebar:
-                    st.markdown('---')
+                with top_sidebar_container:
                     st.subheader("🎯 Filter Dashboard")
                     kelas_analytics = st.selectbox(
                         'Pilih Kelas:',
