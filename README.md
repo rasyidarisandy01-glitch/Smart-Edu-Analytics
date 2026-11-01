@@ -1,9 +1,9 @@
-## Smart Edu Analytics: Platform Analisis Nilai Siswa Berbasis Dual-Mode AI
+# Smart Edu Analytics: Platform Analisis Nilai Siswa Berbasis Dual-Mode AI
 Smart Edu Analytics adalah platform analitik akademik inovatif yang dirancang untuk mengotomatisasi evaluasi nilai siswa bagi guru. Dibangun dengan memprioritaskan stabilitas (Minimum Viable Product/MVP) dan keamanan privasi, platform ini secara instan mengubah data nilai mentah (Excel/CSV) menjadi wawasan pedagogik visual dan laporan PDF.
 
 Proyek ini mengatasi masalah beban kerja administratif guru—yang rata-rata menghabiskan 11 jam per minggu untuk rekapitulasi nilai—dengan memangkas waktu pemrosesan menjadi di bawah 30 detik per kelas.
 
-# Fitur Unggulan
+## Fitur Unggulan
 Dual-Mode AI (Hybrid): Sistem asisten cerdas (Edu-Chat) yang fleksibel. Dapat berjalan di Cloud menggunakan Google Gemini API (untuk performa maksimal) atau secara lokal/Offline menggunakan Ollama (untuk sekolah dengan kendala internet atau kebijakan privasi ketat).
 
 Smart Context Injection (RAG-Lite): AI dirancang 100% bebas dari halusinasi data. AI secara ketat diinstruksikan untuk hanya memberikan analisis, wawasan, dan saran pedagogik berdasarkan angka riil yang diunggah oleh guru.
@@ -22,7 +22,7 @@ Generator PDF Siap Cetak (Massal & Individu): Mengekspor hasil analisis visual d
 
 Academic Early Warning System: Secara proaktif menyoroti siswa yang rata-rata nilainya berada di bawah KKM atau mengalami penurunan drastis pada dua bulan berurutan, membantu guru mengambil tindakan preventif (misalnya remedial atau konseling BK).
 
-# Teknologi yang Digunakan (Pendekatan STEAM)
+## Teknologi yang Digunakan (Pendekatan STEAM)
 Proyek ini dikembangkan secara efisien menggunakan tumpukan teknologi Open-Source (Biaya Operasional Rp 0):
 
 Bahasa Utama: Python 3.10+
@@ -39,7 +39,7 @@ Mesin AI (Offline): Ollama (gemma4:e2b dll.)
 
 Dokumen (Seni & Rekayasa): FPDF (Pembuat Laporan PDF), Matplotlib (Render grafik statis), Zipfile
 
-# Cara Instalasi & Menjalankan Aplikasi Lokal
+## Cara Instalasi & Menjalankan Aplikasi Lokal
 Ikuti langkah-langkah berikut untuk menjalankan Smart Edu Analytics di komputer Anda:
 
 1. Kloning Repositori
@@ -70,7 +70,7 @@ Bash
 streamlit run app.py
 Aplikasi akan otomatis terbuka di browser melalui http://localhost:8501.
 
-# Panduan Penggunaan (Alur Demo)
+## Panduan Penggunaan (Alur Demo)
 Sistem ini didesain menggunakan manajemen memori sementara (session state) untuk presentasi live-demo yang stabil. Sangat disarankan menjalankan alur ini di SATU tab browser yang sama.
 
 Fase 1 (Guru):
@@ -103,7 +103,7 @@ Masukkan NISN anak (Contoh demo: 12345).
 
 Sistem akan langsung menampilkan Radar Chart dan tren nilai khusus untuk anak tersebut tanpa membocorkan data siswa lain.
 
-# Pengembangan ke Depan (Roadmap)
+## Pengembangan ke Depan (Roadmap)
 Smart Edu Analytics versi saat ini adalah bentuk Minimum Viable Product (MVP). Untuk penyebaran skala penuh di institusi pendidikan, direkomendasikan untuk:
 
 Mengganti in-memory dictionary (Mock Database) dengan API ke database relasional sungguhan (seperti MySQL, PostgreSQL, atau integrasi langsung ke sistem Dapodik).
@@ -112,7 +112,7 @@ Menerapkan Parental AI Assistant yang secara spesifik dirancang untuk memberikan
 
 Membangun manajemen kredensial (Hashing/JWT) untuk otentikasi level produksi.
 
-# Lisensi & Atribusi
+## Lisensi & Atribusi
 Proyek ini dibangun untuk tujuan edukasi dan inovasi akademik. Seluruh komponen bersumber dari teknologi open-source.
 
-Dikembangkan oleh: [team_name / my_name]
+Dikembangkan oleh: [Nama Tim Kamu / Nama Kamu]
