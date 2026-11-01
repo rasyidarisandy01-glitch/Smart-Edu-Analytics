@@ -72,7 +72,7 @@ for nama in siswa_kelas_2:
 
 # Simpan ke file Excel baru
 df = pd.DataFrame(data, columns=['Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Bulan', 'Topik', 'Nilai'])
-nama_file = 'Data_Nilai_Multi_Subject_Ekstrem.xlsx'
+nama_file = 'data_siswa.xlsx'
 df.to_excel(nama_file, index=False)
 
 print(f"✅ File {nama_file} berhasil dibuat dengan 2 kelas, 4 mata pelajaran, dan total {len(df)} baris data!")
