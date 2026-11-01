@@ -23,7 +23,7 @@ def individual_monthly_trend(dataframe):
         mode='lines+markers',
         name='Nilai Rata-rata',
         line=dict(color="#00AAFF", width=3),
-        marker=dict(size=8, color="#FF0000")
+        marker=dict(size=8, color="#00AAFF")
     ))
     figure.update_layout(
         title='Pergerakan Nilai',
@@ -134,7 +134,7 @@ def class_monthly_trend(dataframe):
         y=monthly_data['Nilai'],
         mode='lines+markers',
         name='Rata-rata kelas',
-        line=dict(color='#2E8B57', width=3),
+        line=dict(color='#00AAFF', width=3),
         marker=dict(size=8)
     ))
     figure.update_layout(
