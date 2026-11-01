@@ -14,33 +14,39 @@ def set_background(image_file):
     with open(image_file, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
     
-    st.markdown("""
+    st.markdown(f"""
     <style>
+    .stApp {{
+        background-image: url("data:image/jpeg;base64,{encoded_string}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        }}
     /* 1. Menyembunyikan menu bawaan Streamlit */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
 
     /* 2. Styling Card Utama (Efek Container Berbingkai) */
-    div[data-testid="stVerticalBlock"] > div[style*="background-color"] {
+    div[data-testid="stVerticalBlock"] > div[style*="background-color"] {{
         border-radius: 12px;
         padding: 20px;
-    }
+    }}
 
     /* 3. Custom Styling untuk Metric Cards */
-    [data-testid="stMetricValue"] {
+    [data-testid="stMetricValue"] {{
         font-size: 1.8rem !important;
         font-weight: 700 !important;
         color: #2E66F6 !important;
-    }
-    [data-testid="stMetricLabel"] {
+    }}
+    [data-testid="stMetricLabel"] {{
         font-size: 0.9rem !important;
         font-weight: 600 !important;
         color: #A0AEC0 !important;
-    }
+    }}
 
     /* 4. Custom Styling Tombol Primer (AI & Action) */
-    .stButton>button[kind="primary"] {
+    .stButton>button[kind="primary"] {{
         border-radius: 10px !important;
         font-weight: 600 !important;
         background: linear-gradient(135deg, #2E66F6 0%, #1D4ED8 100%) !important;
@@ -49,34 +55,34 @@ def set_background(image_file):
         padding: 0.5rem 1rem !important;
         box-shadow: 0 4px 12px rgba(46, 102, 246, 0.3) !important;
         transition: all 0.3s ease !important;
-    }
-    .stButton>button[kind="primary"]:hover {
+    }}
+    .stButton>button[kind="primary"]:hover {{
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(46, 102, 246, 0.4) !important;
-    }
+    }}
 
     /* 5. Custom Styling Radio/Tab Menu Navigasi */
-    div[role="radiogroup"] {
+    div[role="radiogroup"] {{
         background-color: rgba(255, 255, 255, 0.05);
         padding: 8px;
         border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    }}
 
     /* 6. Kotak Kredensial Demo Login */
-    .demo-badge {
+    .demo-badge {{
         background-color: rgba(46, 102, 246, 0.1);
         border-left: 4px solid #2E66F6;
         padding: 12px 16px;
         border-radius: 6px;
         margin-bottom: 20px;
         font-size: 0.85rem;
-    }
+    }}
     </style>
     """, unsafe_allow_html=True)
 
 # PANGGILAN FUNGSI
-# set_background('bg_edu.jpg')
+# set_background('website_bg.jpg')
 
 logger = logging.getLogger(__name__)
 from config import (
@@ -467,6 +473,52 @@ if not st.session_state.get('logged_in', False):
 
 role = st.session_state['role']
 
+# --- ANIMASI BACKGROUND IKON EDUKASI MELAYANG (DASHBOARD) ---
+st.markdown("""
+<style>
+/* Menargetkan kontainer utama Streamlit agar background ikon tidak tertutup */
+[data-testid="stAppViewContainer"] {
+    background-color: transparent; 
+}
+
+/* Definisi gerakan melayang yang lebih lambat dan tenang */
+@keyframes floatDashAnimation {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(4deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Styling elemen ikon background untuk dashboard */
+.bg-dash-floating-icon {
+    position: fixed;
+    font-size: 2.2rem;
+    opacity: 0.2; /* Sedikit dinaikkan agar lebih terlihat di tema gelap */
+    pointer-events: none; /* WAJIB ada agar tidak memblokir klik pada tombol/dropdown */
+    z-index: 0; /* Diubah dari -1 menjadi 0 agar tidak tenggelam di balik background utama */
+    user-select: none;
+    animation: floatDashAnimation 5s ease-in-out infinite;
+}
+
+/* Posisi Ikon (Menghindari area tengah/konten utama) */
+.dash-icon-1 { top: 15%; left: 15%; animation-duration: 5s; }
+.dash-icon-2 { top: 60%; left: 10%; animation-duration: 7s; animation-delay: 1.5s; }
+.dash-icon-3 { top: 85%; left: 15%; animation-duration: 6s; animation-delay: 0.5s; }
+
+.dash-icon-4 { top: 20%; right: 15%; animation-duration: 6.5s; animation-delay: 1s; }
+.dash-icon-5 { top: 55%; right: 10%; animation-duration: 5.5s; animation-delay: 2s; }
+.dash-icon-6 { top: 80%; right: 15%; animation-duration: 8s; animation-delay: 1.2s; }
+</style>
+
+<!-- Elemen Ikon -->
+<div class="bg-dash-floating-icon dash-icon-1">📈</div>
+<div class="bg-dash-floating-icon dash-icon-2">💡</div>
+<div class="bg-dash-floating-icon dash-icon-3">📚</div>
+
+<div class="bg-dash-floating-icon dash-icon-4">🎯</div>
+<div class="bg-dash-floating-icon dash-icon-5">🎓</div>
+<div class="bg-dash-floating-icon dash-icon-6">📊</div>
+""", unsafe_allow_html=True)
+
 # Judul aplikasi
 if role == 'Orang Tua':
     st.title('📄 Dasbor Analitik Siswa')
@@ -754,7 +806,7 @@ if role == 'Guru':
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
     uploaded_file = st.file_uploader(
-        'Unggah file Excel (.xlsx) atau CSV (.csv)',
+        'Upload atau drop file Excel (.xlsx) atau CSV (.csv)',
         type=['xlsx', 'csv'],
         help='File harus memiliki kolom: Nama Siswa, Kelas, Mata Pelajaran, Bulan, Topik, Nilai'
     )
