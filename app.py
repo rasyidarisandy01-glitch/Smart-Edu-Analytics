@@ -1213,215 +1213,133 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                 
 
             elif menu_tab == menu_kelas:
-                st.subheader('Class Analytics')
-                kelas_analytics = st.selectbox(
-                    'Pilih Kelas untuk Class Analytics:',
-                    options=unique_classes,
-                    key='class_analytics_kelas'
-                )
-                class_df_all_subjects = prepare_class_subject_data(
-                    df, kelas_analytics
-                )
-                subject_options = get_unique_subjects(
-                    class_df_all_subjects
-                )
-                all_subjects_option = ALL_SUBJECTS_OPTION
-                subject_widget_key = 'class_analytics_subjects'
-                current_subject_selection = st.session_state.get(
-                    subject_widget_key, [all_subjects_option]
-                )
-                if (
-                    isinstance(current_subject_selection, list)
-                    and all_subjects_option not in current_subject_selection
-                    and not set(current_subject_selection).issubset(
-                        subject_options
+                # ==========================================
+                # ZONA 1: GLOBAL FILTER (Pindah ke Sidebar)
+                # ==========================================
+                with st.sidebar:
+                    st.markdown('---')
+                    st.subheader("🎯 Filter Dashboard")
+                    kelas_analytics = st.selectbox(
+                        'Pilih Kelas:',
+                        options=unique_classes,
+                        key='class_analytics_kelas'
                     )
-                ):
-                    st.session_state[subject_widget_key] = [
-                        all_subjects_option
-                    ]
-                selected_subjects = st.multiselect(
-                    'Filter Mata Pelajaran:',
-                    options=[all_subjects_option, *subject_options],
-                    default=[all_subjects_option],
-                    key=subject_widget_key
-                )
-                class_df = filter_subjects(
-                    class_df_all_subjects,
-                    selected_subjects,
-                    all_subjects_option
-                )
-                class_df['Nilai'] = pd.to_numeric(
-                    class_df['Nilai'], errors='coerce'
-                )
-                if not selected_subjects:
-                    st.info(
-                        'Pilih minimal satu mata pelajaran atau pilih '
-                        '"Semua Mata Pelajaran".'
+                    
+                    class_df_all_subjects = prepare_class_subject_data(df, kelas_analytics)
+                    subject_options = get_unique_subjects(class_df_all_subjects)
+                    all_subjects_option = ALL_SUBJECTS_OPTION
+                    subject_widget_key = 'class_analytics_subjects'
+                    
+                    current_subject_selection = st.session_state.get(subject_widget_key, [all_subjects_option])
+                    if isinstance(current_subject_selection, list) and all_subjects_option not in current_subject_selection and not set(current_subject_selection).issubset(subject_options):
+                        st.session_state[subject_widget_key] = [all_subjects_option]
+                        
+                    selected_subjects = st.multiselect(
+                        'Filter Mata Pelajaran:',
+                        options=[all_subjects_option, *subject_options],
+                        default=[all_subjects_option],
+                        key=subject_widget_key
                     )
 
-                st.markdown('---')
-                st.subheader('🚨 Academic Early Warning')
-                st.caption(
-                    'Siswa ditandai jika rata-rata nilai di bawah KKM 70 atau '
-                    'nilai rata-rata turun lebih dari 10 poin pada dua bulan '
-                    'kalender berurutan terakhir.'
-                )
-
-                risk_table = get_class_early_warning(
-                    class_df, kelas_analytics, KKM
-                )
-                jumlah_siswa_berisiko = len(risk_table)
-                warning_col, action_col = st.columns([1, 2])
-                with warning_col:
-                    st.metric(
-                        'Perlu Perhatian Kritis',
-                        jumlah_siswa_berisiko
-                    )
-                with action_col:
-                    if jumlah_siswa_berisiko:
-                        st.error(
-                            f'{jumlah_siswa_berisiko} siswa memerlukan '
-                            'perhatian kritis.'
-                        )
-                    else:
-                        st.success(
-                            'Tidak ada siswa yang memenuhi kriteria risiko kritis.'
-                        )
-
-                if risk_table.empty:
-                    st.info(
-                        'Belum ada siswa berisiko berdasarkan nilai dan tren '
-                        'bulanan yang tersedia.'
-                    )
-                else:
-                    st.dataframe(
-                        risk_table.drop(columns=['Kelas']).style.format(
-                            {'Rata-rata Nilai Saat Ini': '{:.1f}'}
-                        ),
-                        use_container_width=True,
-                        hide_index=True
-                    )
-                    if role == 'Guru':
-                        st.caption(
-                            'Gunakan tombol aksi untuk mengisi pilihan kelas '
-                            'dan siswa pada tab Analisis Individu. Buka tab '
-                            'tersebut untuk melanjutkan analisis.'
-                        )
-                        for row_index, risk_row in risk_table.reset_index(
-                            drop=True
-                        ).iterrows():
-                            action_cols = st.columns([2, 1])
-                            with action_cols[0]:
-                                st.write(risk_row['Nama Siswa'])
-                            with action_cols[1]:
-                                st.button(
-                                    'Pilih Siswa Ini untuk Analisis',
-                                    key=(
-                                        'early_warning_select_'
-                                        f'{row_index}_{kelas_analytics}'
-                                    ),
-                                    on_click=_select_student_for_individual_analysis,
-                                    args=(
-                                        risk_row['Kelas'],
-                                        risk_row['Nama Siswa']
-                                    )
-                                )
-
-                if role == 'Guru':
-                    teacher_recommendations = generate_teacher_recommendation(
-                        class_df, KKM
-                    )
-                    with st.expander(
-                        '🛠️ Rekomendasi Tindak Lanjut (RTL) Guru',
-                        expanded=True
-                    ):
-                        st.markdown('\n'.join(
-                            f'- {recommendation}'
-                            for recommendation in teacher_recommendations
-                        ))
-
-
+                class_df = filter_subjects(class_df_all_subjects, selected_subjects, all_subjects_option)
+                class_df['Nilai'] = pd.to_numeric(class_df['Nilai'], errors='coerce')
+                
+                # Kalkulasi Data Utama
                 class_metrics = get_class_metrics(class_df, KKM)
                 rata_rata_kelas = class_metrics['average']
                 jumlah_siswa_kelas = class_metrics['student_count']
                 persentase_ketuntasan = class_metrics['completion_rate']
                 topik_terlemah = class_metrics['weakest_topic']
                 topic_class_data = class_metrics['topic_averages']
+                risk_table = get_class_early_warning(class_df, kelas_analytics, KKM)
+                jumlah_siswa_berisiko = len(risk_table)
 
-                # Tampilan Ringkasan Metrik Utama Dashboard
+                # ==========================================
+                # ZONA 2: HEADER & SMART ALERT
+                # ==========================================
+                nama_guru = st.session_state.get('username', 'Guru').replace('_', ' ').title()
+                st.markdown(f"<h3 style='color: #2E66F6;'>Selamat Datang, {nama_guru} 👋</h3>", unsafe_allow_html=True)
+                st.write(f"Analisis Performa Akademik: **{kelas_analytics}**")
+                
+                if jumlah_siswa_berisiko > 0:
+                    st.error(f"🚨 **Early Warning System Aktif:** Ditemukan {jumlah_siswa_berisiko} siswa yang memerlukan perhatian kritis (nilai menurun drastis atau di bawah KKM).")
+                    with st.expander("Lihat Daftar Siswa Berisiko", expanded=False):
+                        st.dataframe(risk_table.drop(columns=['Kelas']).style.format({'Rata-rata Nilai Saat Ini': '{:.1f}'}), use_container_width=True, hide_index=True)
+                        if role == 'Guru':
+                            st.caption('Gunakan tombol di bawah ini untuk melihat detail masalah tiap siswa.')
+                            for row_index, risk_row in risk_table.reset_index(drop=True).iterrows():
+                                action_cols = st.columns([2, 1])
+                                action_cols[0].write(f"⚠️ **{risk_row['Nama Siswa']}**")
+                                action_cols[1].button(
+                                    'Pilih & Analisis',
+                                    key=f'early_warning_select_{row_index}_{kelas_analytics}',
+                                    on_click=_select_student_for_individual_analysis,
+                                    args=(risk_row['Kelas'], risk_row['Nama Siswa'])
+                                )
+
+                # ==========================================
+                # ZONA 3: METRIK UTAMA (KPI)
+                # ==========================================
                 with st.container():
-                    st.markdown("### 📊 Ringkasan Statistik Kelas")
                     metric_cols = st.columns(4)
-                    metric_cols[0].metric('Rata-rata Nilai Kelas', rata_rata_kelas, help='Nilai rerata seluruh mata pelajaran')
+                    metric_cols[0].metric('Rata-rata Kelas', rata_rata_kelas, help='Nilai rerata seluruh mata pelajaran')
                     metric_cols[1].metric('Jumlah Siswa', f"{jumlah_siswa_kelas} Siswa")
                     metric_cols[2].metric('Topik Terlemah', topik_terlemah)
-                    metric_cols[3].metric('Ketuntasan KKM', persentase_ketuntasan, help='Siswa dengan nilai rata-rata >= 70')
+                    metric_cols[3].metric('Ketuntasan', persentase_ketuntasan, help='Persentase siswa di atas KKM')
                 st.markdown("---")
 
-                # Graph
-                chart_cols = st.columns(2)
+                # ==========================================
+                # ZONA 4: VISUALISASI DATA (Kiri-Kanan)
+                # ==========================================
+                st.markdown("#### 📈 Tren & Performa Topik")
+                chart_cols = st.columns([1.5, 1]) # Kolom tren lebih lebar
+                
                 with chart_cols[0]:
-                    st.write('**Tren Rata-rata Nilai Kelas per Bulan**')
                     monthly_fig = class_monthly_trend(class_df)
-                    if monthly_fig is None:
-                        st.info('Belum ada data bulanan valid untuk kelas ini.')
-                    else:
+                    if monthly_fig:
                         st.plotly_chart(monthly_fig, use_container_width=True)
+                    else:
+                        st.info('Belum ada data bulanan.')
 
                 with chart_cols[1]:
-                    st.write('**Rata-rata Nilai per Topik Materi**')
                     topic_fig = class_topic_average_bar(topic_class_data)
-                    if topic_fig is None:
-                        st.info('Belum ada data topik dengan nilai valid untuk kelas ini.')
-                    else:
+                    if topic_fig:
                         st.plotly_chart(topic_fig, use_container_width=True)
+                    else:
+                        st.info('Belum ada data topik.')
 
                 st.write('**Perbandingan Rata-rata Nilai Antar-Mata Pelajaran**')
                 subject_fig = subject_average_bar(class_df)
-                if subject_fig is None:
-                    st.info(
-                        'Belum ada nilai valid untuk dibandingkan antar-mata pelajaran.'
-                    )
-                else:
+                if subject_fig:
                     st.plotly_chart(subject_fig, use_container_width=True)
 
-                table_cols = st.columns(2)
-                with table_cols[0]:
-                    st.write('**Top 5 Siswa dengan Rata-rata Tertinggi**')
-                with table_cols[1]:
-                    st.write('**Siswa Perlu Perhatian Ekstra**')
-                    st.caption('Bottom 5 siswa dengan rata-rata nilai terendah.')
+                st.markdown("---")
 
-                student_rankings = get_student_rankings(class_df)
-                student_count_with_scores = len(student_rankings)
-                if student_count_with_scores < 10:
-                    st.caption(
-                        f'Kelas ini memiliki {student_count_with_scores} siswa dengan nilai valid; '
-                        'daftar Top 5 dan Bottom 5 dapat berisi siswa yang sama.'
+                # ==========================================
+                # ZONA 5: AI BRAIN & TABEL DATA MENTAH
+                # ==========================================
+                st.markdown("#### 🧠 AI Brain: Rekomendasi Tindak Lanjut (RTL)")
+                if role == 'Guru':
+                    teacher_recommendations = generate_teacher_recommendation(class_df, KKM)
+                    st.info(
+                        "**Kesimpulan & Saran Aksi Berdasarkan Data Kelas:**\n\n" + 
+                        '\n'.join(f'- {recommendation}' for recommendation in teacher_recommendations)
                     )
 
-                if student_rankings.empty:
-                    with table_cols[0]:
+                with st.expander("📊 Lihat Papan Peringkat Kelas (Top & Bottom 5)", expanded=False):
+                    table_cols = st.columns(2)
+                    student_rankings = get_student_rankings(class_df)
+                    
+                    if not student_rankings.empty:
+                        top_students, bottom_students = get_student_ranking_tables(student_rankings)
+                        with table_cols[0]:
+                            st.write('**Top 5 Siswa**')
+                            st.dataframe(top_students.style.format({'Rata-rata Nilai': '{:.1f}'}), use_container_width=True, hide_index=True)
+                        with table_cols[1]:
+                            st.write('**Bottom 5 Siswa**')
+                            st.dataframe(bottom_students.style.format({'Rata-rata Nilai': '{:.1f}'}), use_container_width=True, hide_index=True)
+                    else:
                         st.info('Belum ada nilai siswa yang valid untuk dirangking.')
-                    with table_cols[1]:
-                        st.info('Belum ada nilai siswa yang valid untuk dirangking.')
-                else:
-                    top_students, bottom_students = get_student_ranking_tables(
-                        student_rankings
-                    )
-                    with table_cols[0]:
-                        st.dataframe(
-                            top_students.style.format({'Rata-rata Nilai': '{:.1f}'}),
-                            use_container_width=True,
-                            hide_index=True
-                        )
-                    with table_cols[1]:
-                        st.dataframe(
-                            bottom_students.style.format({'Rata-rata Nilai': '{:.1f}'}),
-                            use_container_width=True,
-                            hide_index=True
-                        )
             else:
                 _render_edu_chat()
 
