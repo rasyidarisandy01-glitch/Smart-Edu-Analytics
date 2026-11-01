@@ -43,11 +43,15 @@ Dokumen (Seni & Rekayasa): FPDF (Pembuat Laporan PDF), Matplotlib (Render grafik
 Ikuti langkah-langkah berikut untuk menjalankan Smart Edu Analytics di komputer Anda:
 
 1. Kloning Repositori
-Bash
+Bash:
+
 git clone https://github.com/username-anda/smart-edu-analytics.git
+
 cd smart-edu-analytics
-3. Buat Virtual Environment (Opsional tapi disarankan)
+3. Buat Virtual Environment
+
 Bash
+
 python -m venv venv
 - Untuk Windows:
 venv\Scripts\activate
@@ -57,16 +61,16 @@ source venv/bin/activate
 Pastikan Anda menginstal seluruh pustaka yang diperlukan:
 
 Bash
+
 pip install streamlit pandas plotly requests fpdf2 matplotlib google-generativeai openpyxl
 4. Konfigurasi Kosmetik UI (Opsional)
 Untuk tampilan level Enterprise, pastikan file konfigurasi tema berada pada jalurnya:
 
 Buat folder .streamlit dan pastikan file .streamlit/config.toml berisi pengaturan primary color dan dark mode.
 
-Pastikan file background (contoh: bg_login.jpg) berada di direktori akar yang sama dengan app.py.
-
 5. Jalankan Aplikasi
 Bash
+
 streamlit run app.py
 Aplikasi akan otomatis terbuka di browser melalui http://localhost:8501.
 
