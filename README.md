@@ -119,4 +119,4 @@ Membangun manajemen kredensial (Hashing/JWT) untuk otentikasi level produksi.
 ## Lisensi & Atribusi
 Proyek ini dibangun untuk tujuan edukasi dan inovasi akademik. Seluruh komponen bersumber dari teknologi open-source.
 
-Dikembangkan oleh: [Nama Tim Kamu / Nama Kamu]
+Dikembangkan oleh: [Team / Muhammad Rasyid Arisandy]
