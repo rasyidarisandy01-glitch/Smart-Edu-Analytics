@@ -1,0 +1,7 @@
+streamlit
+pandas
+plotly
+requests
+openpyxl
+fpdf2
+google-generativeai
