@@ -4,4 +4,5 @@ plotly
 requests
 openpyxl
 fpdf2
+matplotlib
 google-generativeai

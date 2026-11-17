@@ -11,6 +11,7 @@ from config import (
     AI_REPORT_PROMPT_TEMPLATE,
     GEMINI_ENGINE,
     create_gemini_model,
+    get_default_ollama_host,
 )
 from data_utils import build_student_data_summary
 
@@ -68,10 +69,17 @@ def clean_parent_report(text):
     return cleaned
 
 
-def call_ollama_api(prompt, model='llama2', messages=None):
-    """Call a local Ollama instance and return its generated text."""
+def _resolve_ollama_host(host=None):
+    """Prefer an explicit host, then Streamlit secrets / OLLAMA_HOST env."""
+    resolved = host or get_default_ollama_host()
+    return str(resolved).strip().rstrip('/')
+
+
+def call_ollama_api(prompt, model='llama2', messages=None, host=None):
+    """Call an Ollama instance (local or tunneled) and return its text."""
     conversation = messages or [{'role': 'user', 'content': prompt}]
-    url = 'http://localhost:11434/api/chat'
+    base_url = _resolve_ollama_host(host)
+    url = f'{base_url}/api/chat'
     payload = {
         'model': model,
         'messages': conversation,
@@ -84,7 +92,7 @@ def call_ollama_api(prompt, model='llama2', messages=None):
             for message in conversation
         )
         response = requests.post(
-            'http://localhost:11434/api/generate',
+            f'{base_url}/api/generate',
             json={
                 'model': model,
                 'prompt': fallback_prompt,
@@ -114,7 +122,7 @@ def build_student_report_prompt(student_name, student_data):
 
 
 def generate_ai_response(
-    engine, prompt, api_key=None, model_name=None
+    engine, prompt, api_key=None, model_name=None, ollama_host=None
 ):
     if engine == GEMINI_ENGINE:
         if not api_key:
@@ -127,7 +135,11 @@ def generate_ai_response(
             prompt, request_options={'timeout': 120}
         )
         return response.text
-    return call_ollama_api(prompt, model=model_name or 'llama2')
+    return call_ollama_api(
+        prompt,
+        model=model_name or 'llama2',
+        host=ollama_host
+    )
 
 
 def generate_chat_response(
@@ -137,7 +149,8 @@ def generate_chat_response(
     api_key=None,
     model_name=None,
     local_memory_limit=3000,
-    chat_history=None
+    chat_history=None,
+    ollama_host=None
 ):
     context_text = str(context_data or '')
     is_local_ai = 'Ollama' in ai_mode
@@ -209,7 +222,8 @@ def generate_chat_response(
             text = call_ollama_api(
                 messages[-1]['content'],
                 model=model_name or 'llama2',
-                messages=messages
+                messages=messages,
+                host=ollama_host
             )
         except Exception:
             logger.exception('Gagal memperoleh jawaban Edu-Chat dari Ollama')
