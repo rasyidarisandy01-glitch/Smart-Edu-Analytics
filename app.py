@@ -570,7 +570,7 @@ with st.sidebar:
                 st.caption(
                     'Lokal: biarkan `http://localhost:11434`. '
                     'Hybrid/Cloud: jalankan '
-                    '`cloudflared tunnel --url http://localhost:11434` '
+                    '`cloudflared tunnel --url http://localhost:11434 --http-host-header="localhost:11434"` '
                     'lalu tempel URL `https://....trycloudflare.com` di sini.'
                 )
             api_key = None
