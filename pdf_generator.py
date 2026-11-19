@@ -317,9 +317,12 @@ def generate_pdf(
         )
         pdf.multi_cell(0, 4, _pdf_safe_text(clean_text))
 
+        top_spacing = 14
         signature_block_height = 44
         if pdf.will_page_break(signature_block_height):
             pdf.add_page()
+        else:
+            pdf.ln(top_spacing)
 
         column_width = (pdf.w - pdf.l_margin - pdf.r_margin) / 2
         left_x = pdf.l_margin
