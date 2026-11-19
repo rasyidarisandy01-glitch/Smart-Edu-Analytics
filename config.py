@@ -37,13 +37,10 @@ GEMINI_MODELS = [
     'gemini-3.8-flash',
     'gemini-3.6-flash',
     'gemini-3.5-flash-lite',
-    'gemini-3.1-flash-lite',
     'gemini-3.1-pro',
-    'gemini-3-flash',
-    'gemini-2.5-pro',
-    'gemini-2.5-flash',
-    'gemini-2.5-flash-lite'
+    'gemini-3.1-flash-lite',
 ]
+_AVAILABLE_MODELS_CACHE = {}
 AI_REPORT_DELIMITER = '===BATAS_PDF==='
 ALL_SUBJECTS_OPTION = 'Semua Mata Pelajaran'
 
@@ -84,3 +81,39 @@ def configure_gemini(api_key):
 def create_gemini_model(model_name):
     """Create a configured Gemini generative model."""
     return genai.GenerativeModel(model_name)
+
+
+def get_available_gemini_models(api_key=None):
+    """Retrieve available Gemini models supporting text generation.
+
+    Caches results per API key and falls back to GEMINI_MODELS on error or missing key.
+    """
+    if not api_key or not str(api_key).strip():
+        return GEMINI_MODELS
+
+    cleaned_key = str(api_key).strip()
+    if cleaned_key in _AVAILABLE_MODELS_CACHE:
+        return _AVAILABLE_MODELS_CACHE[cleaned_key]
+
+    try:
+        configure_gemini(cleaned_key)
+        fetched_models = []
+        for model in genai.list_models():
+            methods = getattr(model, 'supported_generation_methods', []) or []
+            model_name = getattr(model, 'name', '') or ''
+            if 'generateContent' in methods and 'gemini-' in model_name:
+                cleaned_name = model_name.replace('models/', '', 1)
+                if cleaned_name not in fetched_models:
+                    fetched_models.append(cleaned_name)
+
+        if not fetched_models:
+            return GEMINI_MODELS
+
+        primary_models = [m for m in GEMINI_MODELS if m in fetched_models]
+        other_models = sorted([m for m in fetched_models if m not in primary_models])
+        sorted_models = primary_models + other_models
+
+        _AVAILABLE_MODELS_CACHE[cleaned_key] = sorted_models
+        return sorted_models
+    except Exception:
+        return GEMINI_MODELS

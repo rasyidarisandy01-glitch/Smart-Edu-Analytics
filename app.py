@@ -94,6 +94,7 @@ from config import (
     OLLAMA_ENGINE,
     TEMPLATE_COLUMNS,
     configure_gemini,
+    get_available_gemini_models,
     get_default_ollama_host,
 )
 # Load data helpers before services and visualizations that also depend on them.
@@ -193,9 +194,16 @@ def _render_edu_chat():
             type='password',
             key='edu_chat_gemini_api_key'
         )
+        chat_gemini_options = get_available_gemini_models(chat_api_key)
+        if (
+            st.session_state.get('edu_chat_gemini_model') is not None
+            and st.session_state.get('edu_chat_gemini_model') not in chat_gemini_options
+        ):
+            st.session_state['edu_chat_gemini_model'] = chat_gemini_options[0]
+
         chat_model = st.selectbox(
             'Model Gemini untuk Edu-Chat',
-            options=GEMINI_MODELS,
+            options=get_available_gemini_models(chat_api_key),
             key='edu_chat_gemini_model'
         )
     else:
@@ -591,9 +599,10 @@ with st.sidebar:
                 st.info('Silakan masukkan Gemini API Key untuk menggunakan fitur AI')
 
             st.markdown('---')
+            available_gemini_models = get_available_gemini_models(api_key)
             gemini_model = st.selectbox(
                 label='Pilih Model Gemini:',
-                options=GEMINI_MODELS,
+                options=available_gemini_models,
                 index=0
             )
             st.info(f'Model Gemini yang akan digunakan: {gemini_model}')
