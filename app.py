@@ -94,6 +94,7 @@ from config import (
     OLLAMA_ENGINE,
     TEMPLATE_COLUMNS,
     configure_gemini,
+    get_default_ollama_host,
 )
 # Load data helpers before services and visualizations that also depend on them.
 import data_utils as _data_utils
@@ -300,7 +301,10 @@ def _render_edu_chat():
                     api_key=chat_api_key,
                     model_name=chat_model,
                     local_memory_limit=local_memory_limit,
-                    chat_history=chat_history[:-1]
+                    chat_history=chat_history[:-1],
+                    ollama_host=st.session_state.get(
+                        'ollama_host', get_default_ollama_host()
+                    )
                 )
             chat_history.append({'role': 'assistant', 'content': response})
             with st.chat_message('assistant'):
@@ -551,6 +555,24 @@ with st.sidebar:
                 help='Masukkan nama model Ollama yang tersedia (contoh: gemma4:e2b, qwen3, llama2, dll.)'
             )
             st.info(f'Model Ollama yang akan digunakan: {ollama_model}')
+            if 'ollama_host' not in st.session_state:
+                st.session_state['ollama_host'] = get_default_ollama_host()
+            with st.expander('URL Server Ollama', expanded=False):
+                st.text_input(
+                    label='URL Server Ollama',
+                    key='ollama_host',
+                    help=(
+                        'Default dari secrets/env (`OLLAMA_HOST`) atau '
+                        'http://localhost:11434. Tempel URL Cloudflare Tunnel '
+                        'atau Ngrok saat demo di Streamlit Cloud.'
+                    )
+                )
+                st.caption(
+                    'Lokal: biarkan `http://localhost:11434`. '
+                    'Hybrid/Cloud: jalankan '
+                    '`cloudflared tunnel --url http://localhost:11434 --http-host-header="localhost:11434"` '
+                    'lalu tempel URL `https://....trycloudflare.com` di sini.'
+                )
             api_key = None
             gemini_model = GEMINI_MODELS[0]
         else:
@@ -583,10 +605,22 @@ with st.sidebar:
             'diperlukan untuk menghindari quota exceeded (hanya untuk Gemini API)'
         )
         if ai_engine == OLLAMA_ENGINE:
-            st.info(
-                '🔒 **Privasi Lokal:** Data dikirim hanya ke layanan Ollama '
-                'yang berjalan di mesin lokal Anda.'
+            current_ollama_host = st.session_state.get(
+                'ollama_host', get_default_ollama_host()
             )
+            if (
+                'localhost' in str(current_ollama_host)
+                or '127.0.0.1' in str(current_ollama_host)
+            ):
+                st.info(
+                    '🔒 **Privasi Lokal:** Data dikirim hanya ke layanan Ollama '
+                    'yang berjalan di mesin lokal Anda.'
+                )
+            else:
+                st.info(
+                    '🌐 **Mode Hybrid:** Dashboard cloud menghubungi Ollama '
+                    f'melalui tunnel `{current_ollama_host}`.'
+                )
         else:
             st.warning(
                 '☁️ **Pemrosesan Cloud:** Data yang dikirim ke Gemini API '
@@ -1169,7 +1203,11 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                                     response_text = generate_ai_response(
                                         ai_engine,
                                         prompt,
-                                        model_name=ollama_model
+                                        model_name=ollama_model,
+                                        ollama_host=st.session_state.get(
+                                            'ollama_host',
+                                            get_default_ollama_host()
+                                        )
                                     )
 
                             if (
@@ -1214,10 +1252,13 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                                     st.error(f'Terjadi kesalahat saat menghubungi Gemini API: {error_msg}')
                                 st.info('Pastikan API Key Anda valid dan Generative Language API diaktifkan di Google Cloud Console')
                             elif isinstance(e, requests.exceptions.ConnectionError):
+                                ollama_host_display = st.session_state.get(
+                                    'ollama_host', get_default_ollama_host()
+                                )
                                 st.error(
                                     '❌ Tidak dapat terhubung ke Ollama. '
                                     'Pastikan Ollama sedang berjalan di '
-                                    'http://localhost:11434'
+                                    f'{ollama_host_display}'
                                 )
                             elif isinstance(e, requests.exceptions.Timeout):
                                 st.error(
