@@ -39,6 +39,29 @@ Mesin AI (Offline): Ollama (gemma4:e2b dll.)
 
 Dokumen (Seni & Rekayasa): FPDF (Pembuat Laporan PDF), Matplotlib (Render grafik statis), Zipfile
 
+## Deploy Hybrid ke Streamlit Community Cloud
+Arsitektur hybrid: dashboard berjalan di Streamlit Cloud, mesin Ollama tetap di laptop (localhost:11434). Saat demo, laptop dipublikasikan lewat Cloudflare Tunnel.
+
+1. Push repositori ke GitHub, lalu deploy di [share.streamlit.io](https://share.streamlit.io) dengan file utama `app.py`.
+2. (Opsional) di Streamlit Cloud → App settings → Secrets, isi:
+
+```toml
+OLLAMA_HOST = "http://localhost:11434"
+```
+
+URL ini juga bisa diisi lewat environment variable `OLLAMA_HOST`, atau langsung di sidebar **URL Server Ollama** tanpa mengubah kode.
+
+### Hubungkan Ollama lokal ke internet (saat demo)
+Pastikan Ollama sudah jalan di laptop (`ollama serve`, model sudah di-pull). Di terminal terpisah:
+
+```bash
+cloudflared tunnel --url http://localhost:11434
+```
+
+Salin URL HTTPS yang muncul (contoh: `https://xxxx.trycloudflare.com`). Di sidebar aplikasi, buka expander **URL Server Ollama**, tempel URL tersebut, lalu generate analisis / Edu-Chat seperti biasa.
+
+Alternatif: Ngrok (`ngrok http 11434`) — tempel URL `https://....ngrok-free.app` dengan cara yang sama.
+
 ## Cara Instalasi & Menjalankan Aplikasi Lokal
 Ikuti langkah-langkah berikut untuk menjalankan Smart Edu Analytics di komputer Anda:
 

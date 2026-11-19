@@ -1,5 +1,7 @@
 """Shared application configuration and AI prompt templates."""
 
+import os
+
 import google.generativeai as genai
 
 KKM = 70
@@ -15,6 +17,22 @@ TEMPLATE_COLUMNS = [
 OLLAMA_ENGINE = 'Ollama (Lokal - Tanpa Kuota)'
 GEMINI_ENGINE = 'Gemini API (Cloud - Butuh Internet)'
 DEFAULT_OLLAMA_MODEL = 'gemma4:e2b'
+DEFAULT_OLLAMA_HOST = 'http://localhost:11434'
+
+
+def get_default_ollama_host():
+    """Resolve Ollama base URL from Streamlit secrets, env, or localhost."""
+    secret_host = None
+    try:
+        import streamlit as st
+        secret_host = st.secrets.get('OLLAMA_HOST')
+    except Exception:
+        secret_host = None
+
+    host = secret_host or os.getenv('OLLAMA_HOST') or DEFAULT_OLLAMA_HOST
+    return str(host).strip().rstrip('/')
+
+
 GEMINI_MODELS = [
     'gemini-3.6-flash',
     'gemini-3.5-flash-lite',

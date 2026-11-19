@@ -204,4 +204,3 @@ def subject_average_bar(dataframe):
     )
     figure.update_yaxes(title='Rata-rata Nilai')
     return figure
-
