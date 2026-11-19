@@ -1249,7 +1249,7 @@ if uploaded_file is not None or st.session_state.get('df') is not None:
                                 elif 'connection' in error_msg.lower() or 'network' in error_msg.lower():
                                     st.error('Tidak dapat terhubung ke Gemini API. Periksa koneksi internet Anda.')
                                 else:
-                                    st.error(f'Terjadi kesalahat saat menghubungi Gemini API: {error_msg}')
+                                    st.error(f'Terjadi kesalahan saat menghubungi Gemini API: {error_msg}')
                                 st.info('Pastikan API Key Anda valid dan Generative Language API diaktifkan di Google Cloud Console')
                             elif isinstance(e, requests.exceptions.ConnectionError):
                                 ollama_host_display = st.session_state.get(
